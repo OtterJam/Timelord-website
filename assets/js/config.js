@@ -31,8 +31,8 @@ window.TL_CONFIG = {
   // web est publique par nature : ce qui protège la base, ce sont les
   // règles de sécurité (voir le README).
   firebase: {
-    projectId: '',
-    apiKey: '',
+    projectId: 'timelord-ec8cd',
+    apiKey: 'AIzaSyA1veCfqD8YRtSkN7PxrZNVsFrK1sZcrbg',
     collection: 'signups',
   },
 };

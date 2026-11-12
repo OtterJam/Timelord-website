@@ -67,15 +67,6 @@
   var still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   if (scene && fine && !still) {
-    // Une copie du décor, posée pile dessus, éclaircie et masquée par un
-    // disque qui suit le curseur : la lumière ne révèle que les pixels des
-    // sprites. Clonée ici plutôt qu'écrite deux fois dans le HTML, pour que
-    // les deux décors ne puissent pas diverger.
-    var lit = scene.cloneNode(true);
-    lit.removeAttribute('id');
-    lit.classList.add('scene--lit');
-    scene.parentNode.insertBefore(lit, scene.nextSibling);
-
     var px = 0;
     var py = 0;
     var mx = 0;
@@ -113,12 +104,8 @@
 
     function paint() {
       queued = false;
-      // Posées sur la racine : les deux copies du décor les lisent.
       root.style.setProperty('--px', px.toFixed(3));
       root.style.setProperty('--py', py.toFixed(3));
-      // Position de la lumière, lue par le masque de la copie éclairée.
-      root.style.setProperty('--mx', mx + 'px');
-      root.style.setProperty('--my', my + 'px');
 
       var look = gaze();
       root.style.setProperty('--ex', look[0].toFixed(3) + '%');
@@ -130,7 +117,6 @@
       my = e.clientY;
       px = (mx / window.innerWidth - 0.5) * 2;
       py = (my / window.innerHeight - 0.5) * 2;
-      lit.classList.add('is-on');
       if (!queued) {
         queued = true;
         window.requestAnimationFrame(paint);
@@ -141,7 +127,6 @@
       px = 0;
       py = 0;
       my = -1; // souris sortie : le regard revient au neutre
-      lit.classList.remove('is-on');
       paint();
     });
   }
@@ -189,10 +174,13 @@
 
   /* ---------- Inscription ---------- */
 
+  var box = $('#signup-box');
   var form = $('#signup');
   var input = $('#signup-email');
   var submit = $('#signup-submit');
+  var label = submit.querySelector('span');
   var msg = $('#signup-msg');
+  var done = $('#signup-done');
   var fb = CONFIG.firebase || {};
 
   function setMsg(text, state) {
@@ -201,11 +189,90 @@
     msg.className = 'signup__msg' + (state ? ' is-' + state : '');
   }
 
+  // Une gerbe d'étincelles carrées, comme les éclats du sort dans le jeu.
+  // Des <div> animées par l'API Web Animations : pas de canvas, rien à
+  // nettoyer à la main, chaque éclat se retire à la fin de sa course.
+  var SPARK_COLORS = ['#f0b454', '#ffd88a', '#fff4d6', '#a98ae0', '#ff6f9c'];
+
+  function burst(x, y) {
+    var layer = document.createElement('div');
+    layer.className = 'sparks';
+    layer.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(layer);
+
+    var ring = document.createElement('span');
+    ring.className = 'shock';
+    ring.style.left = x + 'px';
+    ring.style.top = y + 'px';
+    layer.appendChild(ring);
+
+    var count = 42;
+    var left = count + 1;
+    function settle() { if (--left === 0) layer.remove(); }
+
+    ring.animate(
+      [
+        { transform: 'translate(-50%, -50%) scale(0.2)', opacity: 1 },
+        { transform: 'translate(-50%, -50%) scale(7)', opacity: 0 },
+      ],
+      { duration: 900, easing: 'cubic-bezier(0.2, 0.7, 0.3, 1)' }
+    ).onfinish = settle;
+
+    for (var i = 0; i < count; i++) {
+      var s = document.createElement('span');
+      var size = 3 + Math.round(Math.random() * 3) * 2; // 3, 5, 7 ou 9 px
+      s.style.width = s.style.height = size + 'px';
+      s.style.left = x + 'px';
+      s.style.top = y + 'px';
+      s.style.background = SPARK_COLORS[i % SPARK_COLORS.length];
+      layer.appendChild(s);
+
+      // Surtout vers le haut, en éventail, puis la gravité reprend la main.
+      var angle = -Math.PI / 2 + (Math.random() - 0.5) * Math.PI * 1.5;
+      var speed = 90 + Math.random() * 190;
+      var dx = Math.cos(angle) * speed;
+      var dy = Math.sin(angle) * speed;
+      var fall = 120 + Math.random() * 120;
+
+      s.animate(
+        [
+          { transform: 'translate(-50%, -50%) rotate(0deg)', opacity: 1 },
+          { transform: 'translate(calc(-50% + ' + dx + 'px), calc(-50% + ' + dy + 'px)) rotate(90deg)', opacity: 1, offset: 0.45 },
+          { transform: 'translate(calc(-50% + ' + dx * 1.25 + 'px), calc(-50% + ' + (dy + fall) + 'px)) rotate(180deg)', opacity: 0 },
+        ],
+        {
+          duration: 900 + Math.random() * 700,
+          delay: Math.random() * 90,
+          easing: 'cubic-bezier(0.15, 0.6, 0.35, 1)',
+          fill: 'both',
+        }
+      ).onfinish = settle;
+    }
+  }
+
+  function celebrate() {
+    var r = submit.getBoundingClientRect();
+    if (!still) burst(r.left + r.width / 2, r.top + r.height / 2);
+
+    // Le sort répond : le halo de la plate-forme et le Maître s'embrasent.
+    root.classList.remove('is-cast');
+    void root.offsetWidth; // relance l'animation si on recommence
+    root.classList.add('is-cast');
+
+    // Le formulaire s'efface, la confirmation prend sa place au même endroit.
+    box.classList.add('is-done');
+    form.setAttribute('inert', '');
+    form.setAttribute('aria-hidden', 'true');
+    done.removeAttribute('aria-hidden');
+    // Annoncé aux lecteurs d'écran, invisible à l'œil : la carte le dit déjà.
+    setMsg(t('hero.okTitle') + ' ' + t('hero.okText'), 'sr');
+  }
+
   if (!fb.projectId || !fb.apiKey) {
     // Pas de projet branché : on le dit, plutôt que d'avaler l'adresse dans le vide.
     input.disabled = true;
     submit.setAttribute('aria-disabled', 'true');
-    submit.querySelector('span').setAttribute('data-i18n', 'hero.soon');
+    label.setAttribute('data-i18n', 'hero.soon');
     msg.setAttribute('data-i18n', 'hero.soonNote');
     form.addEventListener('submit', function (e) { e.preventDefault(); });
   } else {
@@ -217,19 +284,27 @@
       '/databases/(default)/documents/' + (fb.collection || 'signups') +
       '?key=' + encodeURIComponent(fb.apiKey);
 
+    var busy = false;
+
     form.addEventListener('submit', function (e) {
       e.preventDefault();
+      if (busy) return;
 
       var email = input.value.trim();
       if (!email || !input.checkValidity()) {
         setMsg(t('hero.err'), 'err');
+        box.classList.remove('is-shake');
+        void box.offsetWidth;
+        box.classList.add('is-shake');
         input.focus();
         return;
       }
 
+      busy = true;
       submit.setAttribute('aria-disabled', 'true');
+      submit.classList.add('is-loading');
       input.disabled = true;
-      setMsg('…');
+      setMsg('');
 
       fetch(endpoint, {
         method: 'POST',
@@ -245,12 +320,13 @@
       })
         .then(function (r) {
           if (!r.ok) throw new Error(r.status);
-          setMsg(t('hero.ok'), 'ok');
+          submit.classList.remove('is-loading');
           form.reset();
-          // Inscrit : le formulaire ne sert plus à rien sur cette page.
-          submit.querySelector('span').textContent = t('hero.done');
+          celebrate();
         })
         .catch(function () {
+          busy = false;
+          submit.classList.remove('is-loading');
           setMsg(t('hero.err'), 'err');
           input.disabled = false;
           submit.removeAttribute('aria-disabled');

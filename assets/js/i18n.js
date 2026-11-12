@@ -15,9 +15,11 @@ window.TL_I18N = {
     'hero.submit': "S'inscrire",
     'hero.soon': 'Bientôt',
     'hero.soonNote': "L'inscription ouvre bientôt.",
-    'hero.ok': 'Merci — à très vite.',
     'hero.err': "Ça n'a pas marché. Réessaie ?",
-    'hero.done': 'Inscrit',
+    'hero.okTitle': 'Tu es sur la liste !',
+    'hero.okText': "Rendez-vous à l'ouverture de la page Steam.",
+    'hero.privacy':
+      "Un seul e-mail, le jour où la page Steam ouvre. Ton adresse ne servira à rien d'autre.",
     'hero.steam': 'Wishlist sur Steam',
     'hero.steamSoon': 'Page à venir',
 
@@ -35,9 +37,11 @@ window.TL_I18N = {
     'hero.submit': 'Join',
     'hero.soon': 'Soon',
     'hero.soonNote': 'Sign-ups open soon.',
-    'hero.ok': 'Thanks — see you soon.',
     'hero.err': 'That did not work. Try again?',
-    'hero.done': 'Done',
+    'hero.okTitle': "You're on the list!",
+    'hero.okText': 'See you when the Steam page goes live.',
+    'hero.privacy':
+      "Just one email, the day the Steam page goes live. Your address won't be used for anything else.",
     'hero.steam': 'Wishlist on Steam',
     'hero.steamSoon': 'Page coming soon',
 

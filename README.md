@@ -23,23 +23,12 @@ un `mask-image`.
 
 Chaque couche porte sa profondeur dans `--d` (dans le HTML) ; `main.js` ne pose
 que la position du curseur (`--px`, `--py`) et le CSS fait le décalage. La
-parallaxe et la lumière ne s'activent qu'à la souris, et jamais si le visiteur
+parallaxe et le regard ne s'activent qu'à la souris, et jamais si le visiteur
 a demandé moins d'animations.
 
 Les calques de nuages et le monde lointain sont des rectangles : leurs bords
 sont fondus par un `mask-image`, sinon ils tracent des barres horizontales
 nettes en travers de l'écran.
-
-### La lumière
-
-`main.js` clone tout le décor en une copie éclaircie (`.scene--lit`), posée
-pile sur l'originale et masquée par un disque qui suit le curseur. Comme le
-masque laisse passer la copie *et* que les calques gardent leur propre
-transparence, la lumière ne révèle que les pixels des sprites, jamais le ciel
-vide derrière eux — **il n'y a donc aucun halo visible autour du curseur**, la
-pierre et les nuages s'éclairent, c'est tout. Le clone est fait en JavaScript
-plutôt qu'écrit deux fois dans le HTML, pour que les deux décors ne puissent
-pas diverger.
 
 ### Le regard
 
@@ -107,15 +96,34 @@ que d'avaler l'adresse dans le vide.
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    // Les inscriptions : on peut y AJOUTER une adresse, rien d'autre.
     match /signups/{doc} {
-      // Le site ne fait qu'écrire. Personne ne peut relire la liste
-      // depuis le navigateur : elle se consulte dans la console.
+
+      // LECTURE, MODIFICATION, SUPPRESSION : interdites à tout le monde.
+      // Ni le site, ni un visiteur, ni un script ne peut récupérer la
+      // liste par l'API. Elle ne se consulte que depuis la console
+      // Firebase ou `gcloud`, avec ton compte Google (ces accès
+      // d'administration ne passent pas par ces règles).
+      allow read, update, delete: if false;
+
+      // ÉCRITURE : seulement un document exactement au format que le
+      // site envoie. Tout autre champ, type ou valeur est refusé.
       allow create: if request.resource.data.keys().hasOnly(['email', 'lang', 'source', 'createdAt'])
+                    && request.resource.data.keys().hasAll(['email', 'lang', 'source', 'createdAt'])
                     && request.resource.data.email is string
                     && request.resource.data.email.size() > 5
                     && request.resource.data.email.size() < 200
-                    && request.resource.data.email.matches('^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$');
-      allow read, update, delete: if false;
+                    && request.resource.data.email.matches('^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$')
+                    && request.resource.data.lang in ['fr', 'en']
+                    && request.resource.data.source is string
+                    && request.resource.data.source.size() < 100
+                    && request.resource.data.createdAt is timestamp;
+    }
+
+    // Tout le reste de la base : fermé, en lecture comme en écriture.
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }
@@ -130,10 +138,14 @@ la console Firebase ou avec `gcloud firestore export`.
 - **La clé d'API web est publique**, c'est normal chez Firebase : elle
   identifie le projet, elle ne l'autorise pas. Ce sont les règles ci-dessus
   qui protègent la base.
-- Comme l'écriture vient du navigateur, **rien n'empêche quelqu'un de poster
-  de fausses adresses**. Si ça arrive, deux parades : activer
-  [App Check](https://firebase.google.com/docs/app-check) (reCAPTCHA v3), ou
-  passer par une Cloud Function qui valide avant d'écrire.
+- **Les règles ne savent pas d'où vient une requête.** Elles imposent le
+  *format* de ce qui est écrit, pas le fait que ça vienne du site : la clé
+  étant publique, n'importe qui peut envoyer un document bien formé avec
+  `curl`. Au pire, ça ajoute de fausses adresses ; ça ne permet jamais de lire
+  la liste. Pour réserver vraiment l'écriture au site, il faut activer
+  [App Check](https://firebase.google.com/docs/app-check) (reCAPTCHA v3) et
+  l'imposer sur Firestore, ou passer par une Cloud Function qui valide avant
+  d'écrire. Le champ `source` est déclaratif : il ne prouve rien.
 - Les doublons ne sont pas filtrés (chaque envoi crée un document). À
   dédupliquer sur `email` au moment de l'export.
 

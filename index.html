@@ -81,21 +81,38 @@
 
         <p class="signup__note" data-i18n="hero.note">Sois prévenu quand la page Steam ouvre.</p>
 
-        <form class="signup" id="signup" novalidate>
-          <input
-            type="email"
-            name="email"
-            id="signup-email"
-            required
-            autocomplete="email"
-            placeholder="Ton adresse e-mail"
-            data-i18n-attr="placeholder:hero.placeholder"
-          />
-          <button class="btn" type="submit" id="signup-submit">
-            <span data-i18n="hero.submit">S'inscrire</span>
-          </button>
-        </form>
+        <!-- Le formulaire et sa confirmation occupent la même case : l'un
+             s'efface, l'autre apparaît, sans que rien ne bouge autour. -->
+        <div class="signup-box" id="signup-box">
+          <form class="signup" id="signup" novalidate>
+            <input
+              type="email"
+              name="email"
+              id="signup-email"
+              required
+              autocomplete="email"
+              placeholder="Ton adresse e-mail"
+              data-i18n-attr="placeholder:hero.placeholder"
+            />
+            <button class="btn" type="submit" id="signup-submit">
+              <span data-i18n="hero.submit">S'inscrire</span>
+            </button>
+          </form>
+
+          <div class="signup-done" id="signup-done" aria-hidden="true">
+            <span class="signup-done__badge" aria-hidden="true">
+              <svg viewBox="0 0 12 10" shape-rendering="crispEdges"><defs><linearGradient id="tick-gold" x1="0" y1="0" x2="0" y2="10" gradientUnits="userSpaceOnUse"><stop offset="0.3" stop-color="#fff1c4" /><stop offset="0.3" stop-color="#f6c76a" /><stop offset="0.65" stop-color="#f6c76a" /><stop offset="0.65" stop-color="#e39a3a" /></linearGradient></defs><path fill="url(#tick-gold)" d="M0 3h1v3h-1zM1 4h1v3h-1zM2 5h1v3h-1zM3 6h1v3h-1zM4 7h1v3h-1zM5 6h1v3h-1zM6 5h1v3h-1zM7 4h1v3h-1zM8 3h1v3h-1zM9 2h1v3h-1zM10 1h1v3h-1zM11 0h1v3h-1z" /></svg>
+            </span>
+            <span class="signup-done__text">
+              <strong data-i18n="hero.okTitle">Tu es sur la liste !</strong>
+              <span data-i18n="hero.okText">Rendez-vous à l'ouverture de la page Steam.</span>
+            </span>
+          </div>
+        </div>
         <p class="signup__msg" id="signup-msg" role="status"></p>
+        <p class="signup__privacy" data-i18n="hero.privacy">
+          Un seul e-mail, le jour où la page Steam ouvre. Ton adresse ne servira à rien d'autre.
+        </p>
 
         <a class="steam" id="cta-steam" href="#">
           <svg viewBox="0 0 24 24" aria-hidden="true">

@@ -160,8 +160,21 @@ Relit les sprites du dépôt du jeu et refabrique `assets/img/`. Demande
 
 ## Mettre en ligne
 
-N'importe quel hébergement de fichiers statiques : GitHub Pages, Netlify,
-Cloudflare Pages, un simple dossier derrière nginx. Rien à compiler.
+Le site est servi par **Cloudflare Workers** (assets statiques, sans code
+serveur), relié au dépôt GitHub : chaque push sur `main` le remet en ligne.
+
+- [`wrangler.jsonc`](wrangler.jsonc) nomme le projet (`playtimelord`) et
+  publie la racine du dépôt ;
+- [`.assetsignore`](.assetsignore) écarte ce qui n'a rien à faire en ligne
+  (`.git`, ce README, `tools/`, la config elle-même).
+
+Dans le dashboard Cloudflare, le projet garde les commandes par défaut :
+pas de commande de build, `npx wrangler deploy` pour déployer. Pour vérifier
+ce qui partirait, sans rien envoyer :
+
+```sh
+npx wrangler deploy --dry-run
+```
 
 Pour regarder en local :
 

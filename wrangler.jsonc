@@ -1,0 +1,11 @@
+// Mise en ligne sur Cloudflare Workers : un site 100 % statique, sans code
+// serveur. Cloudflare reconstruit à chaque push sur main.
+{
+  "name": "playtimelord",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    // Tout le dépôt est servi tel quel ; .assetsignore écarte ce qui
+    // n'a rien à faire en ligne.
+    "directory": "."
+  }
+}

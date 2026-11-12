@@ -1,0 +1,10 @@
+# Fichiers du dépôt qui ne doivent pas être publiés
+.git
+.github
+.wrangler
+node_modules
+.DS_Store
+.assetsignore
+wrangler.jsonc
+README.md
+tools

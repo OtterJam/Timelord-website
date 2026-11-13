@@ -5,42 +5,58 @@ pas de dépendance. On ouvre `index.html` et c'est tout.
 
 ## Le décor
 
-Le sommet de la tour du temps est **monté en couches** (`assets/img/scene/`),
-pas posé comme une seule capture :
+Le fond est l'**illustration de la Faucheuse**, livrée en six plans séparés
+(`assets/img/parallax_faucheuse/`) et remontés dans la page :
 
-| Couche | Origine | Ce qu'elle fait |
+| Plan | Fichier | `--d` |
 |---|---|---|
-| Le halo | CSS | la lumière du sort qui monte de la plate-forme |
-| Le monde lointain | `fx/far_world.png` | défile très lentement, tout au fond |
-| Les nuages d'orage | `fx/storm_clouds.png` | deux bancs, l'un lent et loin, l'autre rapide et près |
-| La tour | plan rendu par le moteur | la plate-forme, le cadran du sort, le parapet |
-| Le Maître du Temps | `character/time_master.png` | flotte au-dessus de la plate-forme ; ses iris suivent le curseur |
+| Le ciel d'orage | `1_ciel` | 4 |
+| Les terres, au loin | `2_terres` | 10 |
+| La Faucheuse | `3_faucheuse` | 17 |
+| L'arbre, sur la droite | `4_arbre` | 24 |
+| La colline | `5_colline` | 30 |
+| Le héros | `6_heros` | 30 |
 
-La couche `tour` est le seul plan rendu : il est **coupé juste au-dessus du
-Maître** (y = 380 dans le plan d'origine) pour que celui-ci soit un sprite à
-part, animé et décalé indépendamment. Son bord haut est fondu dans le ciel par
-un `mask-image`.
+Le **logo est posé dans le décor**, pas par-dessus : derrière le héros, devant
+la Faucheuse. D'où la pile, du fond vers l'avant — décor (`-5`), voile (`-4`),
+logo (`-3`), héros (`-2`), puis le reste de la page. Le héros est donc le seul
+plan dans un second conteneur (`.scene--front`), et le seul à échapper au
+voile : il est au premier plan, il est éclairé comme tel.
 
-Chaque couche porte sa profondeur dans `--d` (dans le HTML) ; `main.js` ne pose
+Chaque plan porte sa profondeur dans `--d` (dans le HTML) ; `main.js` ne pose
 que la position du curseur (`--px`, `--py`) et le CSS fait le décalage. La
-parallaxe et le regard ne s'activent qu'à la souris, et jamais si le visiteur
-a demandé moins d'animations.
+parallaxe ne s'active qu'à la souris, et jamais si le visiteur a demandé moins
+d'animations. Le héros a la **même profondeur que la colline** : sinon il
+glisse du sommet dès que la souris bouge.
 
-Les calques de nuages et le monde lointain sont des rectangles : leurs bords
-sont fondus par un `mask-image`, sinon ils tracent des barres horizontales
-nettes en travers de l'écran.
+Les six plans sont des images de même taille (2000 × 1397), posées dans la même
+boîte avec `object-fit: cover` : même cadrage pour tous, donc alignement
+garanti quelle que soit la fenêtre. Cette boîte **déborde de l'écran** (`inset:
+-2.5% -4%`), de quoi absorber le décalage de la parallaxe sans jamais laisser
+entrer un bord nu. Le débord est plus mince en haut et en bas, où la course est
+deux fois plus courte et où chaque pixel gagné est un bout de capuche.
 
-### Le regard
+L'écran est plus large que l'illustration : ce qui est rogné part par le bas
+(de l'herbe), pas par le haut (`object-position: center 22%`, remonté à 9 % sur
+les écrans larges et courts, où `cover` taille dans la hauteur). Pour la même
+raison, le bloc central (logo, inscription, Steam) se range **en bas de sa
+rangée** plutôt qu'au milieu : la capuche garde le haut de l'écran. Le logo,
+lui, remonte par sa seule marge basse (`margin-bottom: clamp(1.5rem, 11vh,
+6.5rem)`) — le bloc étant calé en bas, cette marge ne déplace que lui, et
+dégage le cadran entre le lettrage et le reste de la page. C'est le réglage à
+toucher pour le monter ou le descendre.
 
-`tools/extract-assets.sh` sépare les **iris** du **corps** du Maître : 16
-pixels roses partent sur leur propre couche, et leur orbite sombre reste sur
-le corps pour ne pas laisser de trou. L'iris glisse alors d'un pixel du sprite
-(1/144 et 1/216 du calque, soit 0,69 % et 0,46 %) vers le curseur. Il ne lève
-jamais les yeux : si le curseur passe au-dessus de sa tête, le regard revient
-au neutre.
+Deux animations discrètes par-dessus : le ciel blanchit deux fois toutes les
+treize secondes (l'orage), et la Faucheuse respire. Elles sont posées sur les
+`<img>`, jamais sur les calques, qui gardent leur décalage de parallaxe pour
+eux seuls.
 
-Les nuages et le monde lointain sont **doublés en miroir** à l'export, pour que
-leur répétition horizontale ne laisse pas de couture.
+### Les images
+
+Les PNG d'origine pèsent 8,6 Mo à eux six ; convertis en WebP (`cwebp -q 82
+-alpha_q 90 -m 6`), ils tombent à **308 Ko**, sans différence visible. Seuls
+les `.webp` sont publiés : `.assetsignore` écarte les PNG et la vidéo
+d'aperçu, qui restent dans le dépôt comme sources.
 
 ## À remplir
 
@@ -151,12 +167,24 @@ la console Firebase ou avec `gcloud firestore export`.
 
 ## Réexporter les visuels
 
+L'illustration de la Faucheuse se reconvertit en une ligne, après un nouvel
+export des plans :
+
+```sh
+cd assets/img/parallax_faucheuse
+for f in *.png; do cwebp -q 82 -alpha_q 90 -m 6 "$f" -o "${f%.png}.webp"; done
+```
+
+Le logo et les icônes, eux, viennent des sprites du jeu :
+
 ```sh
 ./tools/extract-assets.sh [chemin/vers/A-Single-Piece]
 ```
 
 Relit les sprites du dépôt du jeu et refabrique `assets/img/`. Demande
-`ffmpeg`.
+`ffmpeg`. Il refabrique aussi `assets/img/scene/` — l'ancien décor, le sommet
+de la tour monté sprite par sprite, que l'illustration a remplacé. Ces fichiers
+ne sont plus utilisés par la page.
 
 ## Mettre en ligne
 

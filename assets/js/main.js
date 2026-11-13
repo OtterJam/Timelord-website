@@ -58,7 +58,7 @@
 
   /* ---------- Parallaxe à la souris ---------- */
 
-  // Chaque couche porte sa profondeur dans --d ; on ne pose ici que la position
+  // Chaque plan porte sa profondeur dans --d ; on ne pose ici que la position
   // du curseur, et le CSS fait le décalage. Souris seulement : au doigt, le
   // décor reste tranquille.
   var scene = $('#scene');
@@ -69,64 +69,27 @@
   if (scene && fine && !still) {
     var px = 0;
     var py = 0;
-    var mx = 0;
-    var my = 0;
     var queued = false;
-
-    // Où sont les yeux à l'écran. Le calque est en position fixe : seule une
-    // bascule de fenêtre peut déplacer le repère.
-    var master = $('.l-master');
-    var eyeX = 0;
-    var eyeY = 0;
-
-    function locateEyes() {
-      var r = master.getBoundingClientRect();
-      eyeX = r.left + r.width * 0.49;  // les deux orbites, centre à centre
-      eyeY = r.top + r.height * 0.42;  // y = 90 sur les 216 du sprite
-    }
-
-    locateEyes();
-    window.addEventListener('resize', locateEyes);
-
-    // Un pixel du sprite, en proportion du calque : 1/144 et 1/216.
-    var STEP_X = 100 / 144;
-    var STEP_Y = 100 / 216;
-
-    function gaze() {
-      var dy = my - eyeY;
-      // Au-dessus de la tête, il ne lève pas les yeux : regard neutre.
-      if (dy <= 0) return [0, 0];
-      var dx = mx - eyeX;
-      var h = Math.max(-1, Math.min(1, dx / 420));
-      var v = Math.min(1, dy / 520);
-      return [h * STEP_X, v * STEP_Y];
-    }
 
     function paint() {
       queued = false;
       root.style.setProperty('--px', px.toFixed(3));
       root.style.setProperty('--py', py.toFixed(3));
-
-      var look = gaze();
-      root.style.setProperty('--ex', look[0].toFixed(3) + '%');
-      root.style.setProperty('--ey', look[1].toFixed(3) + '%');
     }
 
     window.addEventListener('pointermove', function (e) {
-      mx = e.clientX;
-      my = e.clientY;
-      px = (mx / window.innerWidth - 0.5) * 2;
-      py = (my / window.innerHeight - 0.5) * 2;
+      px = (e.clientX / window.innerWidth - 0.5) * 2;
+      py = (e.clientY / window.innerHeight - 0.5) * 2;
       if (!queued) {
         queued = true;
         window.requestAnimationFrame(paint);
       }
     }, { passive: true });
 
+    // Souris sortie de la page : le décor revient au repos.
     document.addEventListener('pointerleave', function () {
       px = 0;
       py = 0;
-      my = -1; // souris sortie : le regard revient au neutre
       paint();
     });
   }

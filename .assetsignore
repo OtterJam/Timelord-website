@@ -8,3 +8,8 @@ node_modules
 wrangler.jsonc
 README.md
 tools
+
+# L'illustration est servie en .webp (308 Ko les six plans) ; les PNG d'origine
+# et la vidéo d'aperçu restent dans le dépôt, mais ne sont pas publiés.
+assets/img/parallax_faucheuse/*.png
+assets/img/parallax_faucheuse/*.mp4

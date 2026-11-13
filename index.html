@@ -34,32 +34,40 @@
   </head>
 
   <body>
-    <!-- Le sommet de la tour du temps, remonté couche par couche à partir des
-         sprites du jeu. Chaque couche a sa profondeur (--d) pour la parallaxe. -->
+    <!-- L'illustration de la Faucheuse, découpée en six plans : chacun porte sa
+         profondeur (--d) pour la parallaxe, du ciel le plus lointain au héros. -->
     <div class="scene" id="scene" aria-hidden="true">
-      <div class="layer l-glow" style="--d: 2"></div>
-      <div class="layer l-world" style="--d: 5"></div>
-      <div class="layer l-clouds-far" style="--d: 9"></div>
-
-      <!-- Le sommet de la tour, rendu par le moteur du jeu : la plate-forme,
-           le cadran du sort et le parapet. Coupé au-dessus du Maître, qui est
-           une couche à part juste au-dessus. -->
-      <div class="layer l-tower" style="--d: 14">
-        <img class="pixel" src="assets/img/scene/tower.webp" alt="" width="1920" height="464" />
+      <div class="layer l-sky" style="--d: 4">
+        <img src="assets/img/parallax_faucheuse/1_ciel.webp" alt="" width="2000" height="1397" fetchpriority="high" />
       </div>
 
-      <div class="layer l-master" style="--d: 22">
-        <div class="master float">
-          <img class="pixel" src="assets/img/scene/master-body.png" alt="" width="144" height="216" />
-          <!-- Les iris sont une couche à part : ils glissent d'un pixel dans
-               leur orbite pour suivre le curseur. -->
-          <img class="pixel eyes" src="assets/img/scene/master-eyes.png" alt="" width="144" height="216" />
-        </div>
+      <div class="layer l-lands" style="--d: 10">
+        <img src="assets/img/parallax_faucheuse/2_terres.webp" alt="" width="2000" height="1397" decoding="async" />
       </div>
 
-      <div class="layer l-clouds-near" style="--d: 40"></div>
+      <div class="layer l-reaper" style="--d: 17">
+        <img src="assets/img/parallax_faucheuse/3_faucheuse.webp" alt="" width="2000" height="1397" decoding="async" />
+      </div>
 
+      <div class="layer l-tree" style="--d: 24">
+        <img src="assets/img/parallax_faucheuse/4_arbre.webp" alt="" width="2000" height="1397" decoding="async" />
+      </div>
+
+      <div class="layer l-hill" style="--d: 30">
+        <img src="assets/img/parallax_faucheuse/5_colline.webp" alt="" width="2000" height="1397" decoding="async" />
+      </div>
     </div>
+
+    <!-- Le héros est le seul plan posé devant le logo : il a son propre
+         conteneur, plus haut dans la pile (voir .scene--front). Il reste
+         collé à la colline — même profondeur, sinon il glisse du sommet
+         quand la souris bouge. -->
+    <div class="scene scene--front" aria-hidden="true">
+      <div class="layer l-hero" style="--d: 30">
+        <img src="assets/img/parallax_faucheuse/6_heros.webp" alt="" width="2000" height="1397" decoding="async" />
+      </div>
+    </div>
+
     <div class="veil"></div>
 
     <div class="screen">

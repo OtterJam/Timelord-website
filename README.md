@@ -36,9 +36,51 @@ garanti quelle que soit la fenêtre. Cette boîte **déborde de l'écran** (`ins
 entrer un bord nu. Le débord est plus mince en haut et en bas, où la course est
 deux fois plus courte et où chaque pixel gagné est un bout de capuche.
 
-L'écran est plus large que l'illustration : ce qui est rogné part par le bas
-(de l'herbe), pas par le haut (`object-position: center 22%`, remonté à 9 % sur
-les écrans larges et courts, où `cover` taille dans la hauteur). Pour la même
+L'écran est plus large que l'illustration : il faut choisir ce qui part. On
+descend le cadrage (`object-position`) autant que la capuche le permet —
+c'est ce qui garde le plus de héros et de colline dans l'écran. La capuche
+commence à 12,3 % de la hauteur de l'illustration, et on lui laisse toujours
+un peu de ciel au-dessus ; plus le format s'allonge, plus `cover` taille dans
+la hauteur, et moins on peut prendre par le haut. D'où une échelle, où chaque
+palier est le plus bas que son format autorise :
+
+| Format de l'écran | `object-position` |
+|---|---|
+| jusqu'à 9:5 (1,80) | 37 % |
+| 9:5 → 2:1 | 28 % |
+| 2:1 → 9:4 (2,25) | 23 % |
+| 9:4 → 13:5 (2,60) | 19 % |
+| au-delà de 13:5 | 15 % |
+
+Les paliers sont resserrés exprès : un saut de cadrage d'un format à l'autre
+se voit tout de suite (la colline qui disparaît, le héros qui plonge derrière
+le formulaire).
+
+### En portrait, un bandeau plutôt qu'un fond
+
+Sur un écran plus haut que large, `cover` rogne sur les côtés : à 390 × 844 il
+ne reste qu'un tiers de la largeur de l'illustration — la capuche remplit tout,
+et le héros, la colline et les montagnes sortent du cadre. Le décor est donc
+posé en **bandeau haut** (`@media (max-aspect-ratio: 9/10)`), et c'est sa
+hauteur qui règle le zoom : la part de largeur visible vaut
+`largeur / (hauteur_du_bandeau × 1,432)`, donc **plus le bandeau est court,
+plus on voit large**. À 64 svh on retrouve la moitié de l'illustration, ce
+qu'il faut pour la capuche, le cadran, le héros et le haut de la colline.
+
+Le bas du bandeau est fondu au `mask-image`, et le fond de page prend le
+relais : en portrait, il s'éteint dans le vert sombre de la colline
+(`#182512`) plutôt que dans le violet du ciel, pour que la coupure ne se voie
+pas. Le voile, lui, ne sert plus que sur l'illustration : en dessous, le texte
+est déjà sur le fond de page.
+
+En portrait, le héros tombe en plein sur le lettrage : il **repasse derrière
+le logo**. Toute la pile glisse d'un cran pour lui faire une place entre le
+voile et le logo — décor (`-6`), voile (`-5`), héros (`-4`), logo (`-3`) — il
+reste donc au-dessus du voile, ce qui lui garde sa lumière de premier plan.
+
+Sur un téléphone **court** (≤ 720 px de haut), le bloc central mange l'écran
+et le bandeau n'a plus la place de respirer : il y descend à 46 svh.
+L'illustration s'y voit presque entière, et le texte garde son tiers bas. Pour la même
 raison, le bloc central (logo, inscription, Steam) se range **en bas de sa
 rangée** plutôt qu'au milieu : la capuche garde le haut de l'écran. Le logo,
 lui, remonte par sa seule marge basse (`margin-bottom: clamp(1.5rem, 11vh,

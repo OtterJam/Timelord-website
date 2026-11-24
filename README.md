@@ -5,31 +5,42 @@ pas de dépendance. On ouvre `index.html` et c'est tout.
 
 ## Le décor
 
-Le fond est l'**illustration de la Faucheuse**, livrée en six plans séparés
-(`assets/img/parallax_faucheuse/`) et remontés dans la page :
+Le fond est l'**illustration de la Faucheuse**, reprise telle que l'autrice
+l'a peinte : ses huit calques d'origine (`assets/img/parallax_faucheuse/`),
+remontés dans la page dans leur ordre de peinture :
 
 | Plan | Fichier | `--d` |
 |---|---|---|
-| Le ciel d'orage | `1_ciel` | 4 |
-| Les terres, au loin | `2_terres` | 10 |
-| La Faucheuse | `3_faucheuse` | 17 |
-| L'arbre, sur la droite | `4_arbre` | 24 |
-| La colline | `5_colline` | 30 |
+| Le ciel et le soleil | `1_ciel` | 3 |
+| Les nuages d'orage | `2_nuages` | 7 |
+| Les montagnes | `3_montagnes` | 12 |
+| Les collines et les arbres | `4_collines` | 18 |
+| La Faucheuse | `5_faucheuse` | 23 |
 | Le héros | `6_heros` | 30 |
+| La colline, au premier plan | `7_colline` | 30 |
+| La lumière : halo d'horizon et éclairs | `8_lumiere` | 9 |
 
-Le **logo est posé dans le décor**, pas par-dessus : derrière le héros, devant
-la Faucheuse. D'où la pile, du fond vers l'avant — décor (`-5`), voile (`-4`),
-logo (`-3`), héros (`-2`), puis le reste de la page. Le héros est donc le seul
-plan dans un second conteneur (`.scene--front`), et le seul à échapper au
-voile : il est au premier plan, il est éclairé comme tel.
+Une seule inversion par rapport au fichier d'origine : **le héros passe
+derrière la colline**, là où l'autrice l'avait peint dessus. La crête lui
+mange les pieds et le bas de l'épée — il y est planté plutôt que posé. Il
+garde la **même profondeur que la colline** (`30`) : à la moindre différence
+il glisserait hors de la crête dès que la souris bouge.
+
+La **lumière est un calque à part**, le dernier du fichier d'origine : elle se
+pose par-dessus tout le décor, et c'est elle qui donne au paysage son contre-
+jour chaud et ses éclairs. Sa profondeur est courte (`9`) — c'est une brume,
+elle ne doit pas glisser comme un relief.
+
+Le décor est entier derrière le logo : la pile va, du fond vers l'avant,
+décor (`-5`), voile (`-4`), logo (`-3`), puis le reste de la page. Tous les
+plans sont donc sous le même voile, et s'éteignent ensemble.
 
 Chaque plan porte sa profondeur dans `--d` (dans le HTML) ; `main.js` ne pose
 que la position du curseur (`--px`, `--py`) et le CSS fait le décalage. La
 parallaxe ne s'active qu'à la souris, et jamais si le visiteur a demandé moins
-d'animations. Le héros a la **même profondeur que la colline** : sinon il
-glisse du sommet dès que la souris bouge.
+d'animations.
 
-Les six plans sont des images de même taille (2000 × 1397), posées dans la même
+Les huit plans sont des images de même taille (2000 × 1397), posées dans la même
 boîte avec `object-fit: cover` : même cadrage pour tous, donc alignement
 garanti quelle que soit la fenêtre. Cette boîte **déborde de l'écran** (`inset:
 -2.5% -4%`), de quoi absorber le décalage de la parallaxe sans jamais laisser
@@ -73,11 +84,6 @@ relais : en portrait, il s'éteint dans le vert sombre de la colline
 pas. Le voile, lui, ne sert plus que sur l'illustration : en dessous, le texte
 est déjà sur le fond de page.
 
-En portrait, le héros tombe en plein sur le lettrage : il **repasse derrière
-le logo**. Toute la pile glisse d'un cran pour lui faire une place entre le
-voile et le logo — décor (`-6`), voile (`-5`), héros (`-4`), logo (`-3`) — il
-reste donc au-dessus du voile, ce qui lui garde sa lumière de premier plan.
-
 Sur un téléphone **court** (≤ 720 px de haut), le bloc central mange l'écran
 et le bandeau n'a plus la place de respirer : il y descend à 46 svh.
 L'illustration s'y voit presque entière, et le texte garde son tiers bas. Pour la même
@@ -89,16 +95,21 @@ dégage le cadran entre le lettrage et le reste de la page. C'est le réglage à
 toucher pour le monter ou le descendre.
 
 Deux animations discrètes par-dessus : le ciel blanchit deux fois toutes les
-treize secondes (l'orage), et la Faucheuse respire. Elles sont posées sur les
+treize secondes (l'orage — le flash porte sur le ciel *et* sur la lumière, qui
+tient les éclairs), et la Faucheuse respire. Elles sont posées sur les
 `<img>`, jamais sur les calques, qui gardent leur décalage de parallaxe pour
 eux seuls.
 
 ### Les images
 
-Les PNG d'origine pèsent 8,6 Mo à eux six ; convertis en WebP (`cwebp -q 82
--alpha_q 90 -m 6`), ils tombent à **308 Ko**, sans différence visible. Seuls
-les `.webp` sont publiés : `.assetsignore` écarte les PNG et la vidéo
-d'aperçu, qui restent dans le dépôt comme sources.
+Les PNG d'origine (2388 × 1668) pèsent 8,7 Mo à eux huit ; convertis en WebP
+à la taille de la page (`cwebp -q 82 -alpha_q 90 -m 6 -resize 2000 1397`), ils
+tombent à **640 Ko**, sans différence visible. La lumière fait exception : un
+dégradé plein cadre, donc le plus lourd des huit, et le plus flou — on le
+descend à 1400 px et à `-q 76 -alpha_q 75`, ce qui le ramène de 478 à 122 Ko
+sans qu'on voie la différence une fois étalé sur l'écran. Seuls les `.webp`
+sont publiés : `.assetsignore` écarte les PNG et la vidéo d'aperçu, qui
+restent dans le dépôt comme sources.
 
 ## À remplir
 
@@ -214,7 +225,10 @@ export des plans :
 
 ```sh
 cd assets/img/parallax_faucheuse
-for f in *.png; do cwebp -q 82 -alpha_q 90 -m 6 "$f" -o "${f%.png}.webp"; done
+for f in [1-7]_*.png; do
+  cwebp -q 82 -alpha_q 90 -m 6 -resize 2000 1397 "$f" -o "${f%.png}.webp"
+done
+cwebp -q 76 -alpha_q 75 -m 6 -resize 1400 978 8_lumiere.png -o 8_lumiere.webp
 ```
 
 Le logo et les icônes, eux, viennent des sprites du jeu :
@@ -227,6 +241,15 @@ Relit les sprites du dépôt du jeu et refabrique `assets/img/`. Demande
 `ffmpeg`. Il refabrique aussi `assets/img/scene/` — l'ancien décor, le sommet
 de la tour monté sprite par sprite, que l'illustration a remplacé. Ces fichiers
 ne sont plus utilisés par la page.
+
+Le lettrage vient de l'écran-titre du jeu (`Game/assets/img/menu/logo_title.png`,
+632 × 156 en pixel art, onze couleurs, aucun antialiasing). Il est copié tel
+quel et agrandi **en marches** par le navigateur (`.pixel`). Le rapport n'est
+pas entier — 1,3× sur un écran classique, 2,6× sur un retina — mais chaque
+pixel de l'original est préservé et les hachures à 45° de l'ombre restent
+franches. Le sursampler à l'export pour le laisser redescendre par le
+navigateur a été essayé : c'est plus régulier sur le papier, et nettement
+plus mou à l'œil.
 
 ## Mettre en ligne
 

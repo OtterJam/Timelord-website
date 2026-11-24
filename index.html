@@ -34,37 +34,47 @@
   </head>
 
   <body>
-    <!-- L'illustration de la Faucheuse, découpée en six plans : chacun porte sa
-         profondeur (--d) pour la parallaxe, du ciel le plus lointain au héros. -->
+    <!-- L'illustration de la Faucheuse, telle que l'autrice l'a peinte : huit
+         calques, chacun avec sa profondeur (--d) pour la parallaxe, du ciel le
+         plus lointain à la lumière. La lumière (halo d'horizon et éclairs) est
+         le dernier calque du fichier d'origine : elle se pose sur tout le
+         décor, d'où sa place en fin de pile. -->
     <div class="scene" id="scene" aria-hidden="true">
-      <div class="layer l-sky" style="--d: 4">
+      <div class="layer l-sky" style="--d: 3">
         <img src="assets/img/parallax_faucheuse/1_ciel.webp" alt="" width="2000" height="1397" fetchpriority="high" />
       </div>
 
-      <div class="layer l-lands" style="--d: 10">
-        <img src="assets/img/parallax_faucheuse/2_terres.webp" alt="" width="2000" height="1397" decoding="async" />
+      <div class="layer l-clouds" style="--d: 7">
+        <img src="assets/img/parallax_faucheuse/2_nuages.webp" alt="" width="2000" height="1397" fetchpriority="high" />
       </div>
 
-      <div class="layer l-reaper" style="--d: 17">
-        <img src="assets/img/parallax_faucheuse/3_faucheuse.webp" alt="" width="2000" height="1397" decoding="async" />
+      <div class="layer l-mounts" style="--d: 12">
+        <img src="assets/img/parallax_faucheuse/3_montagnes.webp" alt="" width="2000" height="1397" decoding="async" />
       </div>
 
-      <div class="layer l-tree" style="--d: 24">
-        <img src="assets/img/parallax_faucheuse/4_arbre.webp" alt="" width="2000" height="1397" decoding="async" />
+      <div class="layer l-fields" style="--d: 18">
+        <img src="assets/img/parallax_faucheuse/4_collines.webp" alt="" width="2000" height="1397" decoding="async" />
+      </div>
+
+      <div class="layer l-reaper" style="--d: 23">
+        <img src="assets/img/parallax_faucheuse/5_faucheuse.webp" alt="" width="2000" height="1397" decoding="async" />
+      </div>
+
+      <!-- Le héros passe derrière le monticule : la crête lui mange les pieds,
+           il y est planté plutôt que posé dessus. Même profondeur que le
+           monticule, sinon il glisse du sommet quand la souris bouge. -->
+      <div class="layer l-hero" style="--d: 30">
+        <img src="assets/img/parallax_faucheuse/6_heros.webp" alt="" width="2000" height="1397" decoding="async" />
       </div>
 
       <div class="layer l-hill" style="--d: 30">
-        <img src="assets/img/parallax_faucheuse/5_colline.webp" alt="" width="2000" height="1397" decoding="async" />
+        <img src="assets/img/parallax_faucheuse/7_colline.webp" alt="" width="2000" height="1397" decoding="async" />
       </div>
-    </div>
 
-    <!-- Le héros est le seul plan posé devant le logo : il a son propre
-         conteneur, plus haut dans la pile (voir .scene--front). Il reste
-         collé à la colline — même profondeur, sinon il glisse du sommet
-         quand la souris bouge. -->
-    <div class="scene scene--front" aria-hidden="true">
-      <div class="layer l-hero" style="--d: 30">
-        <img src="assets/img/parallax_faucheuse/6_heros.webp" alt="" width="2000" height="1397" decoding="async" />
+      <!-- Le halo et les éclairs flottent entre le décor et nous : une
+           profondeur courte, pour qu'ils glissent peu. -->
+      <div class="layer l-glow" style="--d: 9">
+        <img src="assets/img/parallax_faucheuse/8_lumiere.webp" alt="" width="2000" height="1397" decoding="async" />
       </div>
     </div>
 
@@ -84,8 +94,8 @@
           class="logo pixel"
           src="assets/img/brand/logo-wordmark.png"
           alt="TimeLord"
-          width="976"
-          height="192"
+          width="632"
+          height="156"
           fetchpriority="high"
         />
 

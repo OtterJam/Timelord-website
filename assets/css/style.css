@@ -57,6 +57,9 @@ body {
 }
 
 img { display: block; max-width: 100%; height: auto; }
+
+/* Le pixel art est agrandi en marches, jamais lissé. */
+.pixel { image-rendering: pixelated; image-rendering: crisp-edges; }
 [hidden] { display: none !important; }
 h1, h2 { font-family: var(--font-display); font-weight: 700; line-height: 1.15; margin: 0; }
 p { margin: 0; }
@@ -70,16 +73,12 @@ a { text-decoration: none; }
   overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
 }
 
-/* Le pixel art est agrandi en marches, jamais lissé. */
-.pixel { image-rendering: pixelated; image-rendering: crisp-edges; }
-
 /* ==================================================================
-   Le décor — l'illustration de la Faucheuse, découpée en six plans
+   Le décor — l'illustration de la Faucheuse, en huit calques
    ================================================================== */
 
-/* Le décor encadre le logo : les cinq premiers plans sont derrière lui, le
-   héros devant. D'où cette pile, du fond vers l'avant :
-   décor (-5) → voile (-4) → logo (-3) → héros (-2) → le reste de la page. */
+/* Le décor est entier derrière le logo. D'où cette pile, du fond vers
+   l'avant : décor (-5) → voile (-4) → logo (-3) → le reste de la page. */
 .scene {
   position: fixed;
   inset: 0;
@@ -88,14 +87,12 @@ a { text-decoration: none; }
   pointer-events: none;
 }
 
-.scene--front { z-index: -2; }
-
 /* Chaque plan couvre l'écran avec un peu de rab tout autour : la parallaxe le
    décale de --d pixels au bout de la course de la souris, et ce débord évite
    qu'un bord nu n'entre dans le cadre. Le rab est plus mince en haut et en
    bas, où la course est deux fois plus courte — et où chaque pixel gagné est
    un bout de capuche. Même boîte pour tous les plans, donc même cadrage :
-   les six restent alignés au pixel près. */
+   les huit restent alignés au pixel près. */
 .layer {
   position: absolute;
   inset: -2.5% -4%;
@@ -103,8 +100,8 @@ a { text-decoration: none; }
   transition: translate 0.45s var(--ease);
 }
 
-/* Six textures plein écran sur la carte graphique, ça ne se demande que là où
-   la parallaxe tourne vraiment : à la souris. */
+/* Huit textures plein écran sur la carte graphique, ça ne se demande que là
+   où la parallaxe tourne vraiment : à la souris. */
 @media (pointer: fine) {
   .layer { will-change: translate; }
 }
@@ -121,8 +118,11 @@ a { text-decoration: none; }
 }
 
 /* L'orage gronde : le ciel blanchit deux fois, puis se tient tranquille une
-   douzaine de secondes. */
-.l-sky img { animation: storm 13s linear infinite; }
+   douzaine de secondes. Le calque de lumière porte les éclairs : il flashe
+   avec le ciel, sinon le coup de blanc viendrait du fond et pas de la foudre
+   qu'on voit à l'écran. */
+.l-sky img,
+.l-glow img { animation: storm 13s linear infinite; }
 
 @keyframes storm {
   0%, 84%, 100% { filter: brightness(1); }
@@ -133,17 +133,11 @@ a { text-decoration: none; }
 }
 
 /* La Faucheuse respire au-dessus de la colline ; le héros, lui, tient à peine
-   en place. Le mouvement est sur l'image, jamais sur le calque : celui-ci
+   en place — son souffle le fait jouer d'un cheveu derrière la crête, ce qui
+   l'y enracine. Le mouvement est sur l'image, jamais sur le calque : celui-ci
    garde son décalage de parallaxe. */
 .l-reaper img { animation: breathe 9s ease-in-out infinite; }
-
-/* Le héros est le seul plan posé devant le voile (il passe devant le logo) :
-   il porte donc sa propre pénombre, sinon son habit blanc ressort comme un
-   autocollant et avale le texte qui le croise. */
-.l-hero img {
-  animation: breathe-small 5s ease-in-out infinite;
-  filter: brightness(0.62);
-}
+.l-hero img { animation: breathe-small 5s ease-in-out infinite; }
 
 @keyframes breathe {
   0%, 100% { translate: 0 -7px; }
@@ -228,8 +222,14 @@ a { text-decoration: none; }
 
 /* ---------- Le bloc central ---------- */
 
-/* Le logo est posé dans le décor, pas par-dessus : derrière le héros, devant
-   la Faucheuse. Il reste au-dessus du voile, qui l'éteindrait. */
+/* Le logo est posé dans le décor, pas par-dessus : il reste au-dessus du
+   voile, qui l'éteindrait.
+
+   Il est servi à sa taille native (632 × 156, le lettrage du menu-titre du
+   jeu) et agrandi en marches par le navigateur. Le rapport n'est pas entier
+   — 1,3× sur un écran classique, 2,6× sur un retina — mais chaque pixel de
+   l'original est préservé, et les hachures à 45° de l'ombre restent franches.
+   Le sursampler avant de le redescendre les émousserait. */
 .logo {
   position: relative;
   z-index: -3;
@@ -442,7 +442,8 @@ a { text-decoration: none; }
 
 /* Le sort répond : l'orage claque et la Faucheuse s'embrase. Les animations
    de fond sont reprises telles quelles, sinon la respiration s'arrête net. */
-.is-cast .l-sky img { animation: storm 13s linear infinite, cast-sky 1.8s var(--ease); }
+.is-cast .l-sky img,
+.is-cast .l-glow img { animation: storm 13s linear infinite, cast-sky 1.8s var(--ease); }
 .is-cast .l-reaper img { animation: breathe 9s ease-in-out infinite, cast-reaper 1.8s var(--ease); }
 
 @keyframes cast-sky {
@@ -673,14 +674,6 @@ a { text-decoration: none; }
    cadre. On la pose donc en bandeau haut : c'est sa hauteur qui règle le zoom
    (plus court = plus large), et le bas se fond dans le fond de page. --- */
 @media (max-aspect-ratio: 9 / 10) {
-  /* En portrait, le héros tombe en plein sur le lettrage : il repasse donc
-     derrière le logo. Toute la pile glisse d'un cran pour lui faire une place
-     entre le voile et le logo — il reste au-dessus du voile, c'est ce qui lui
-     garde sa lumière de premier plan. */
-  .scene { z-index: -6; }
-  .veil { z-index: -5; }
-  .scene--front { z-index: -4; }
-
   .scene {
     bottom: auto;
     height: 64svh;
@@ -736,7 +729,7 @@ a { text-decoration: none; }
 @media (prefers-reduced-motion: reduce) {
   /* Les `!important` passent aussi devant les variantes `.is-cast`, qui
      rejouent ces mêmes animations. */
-  .l-sky img, .l-reaper img, .l-hero img,
+  .l-sky img, .l-glow img, .l-reaper img, .l-hero img,
   .signup-box.is-done .signup-done,
   .signup-box.is-done .signup-done__badge,
   .signup-box.is-done .signup-done__badge svg,

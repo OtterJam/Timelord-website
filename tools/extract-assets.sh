@@ -58,10 +58,10 @@ ffmpeg -v error -i "$IMG/fx/storm_clouds.png" -filter_complex "[0]split[a][b];[b
 ffmpeg -v error -i "$IMG/fx/far_world.png"    -filter_complex "[0]split[a][b];[b]hflip[f];[a][f]hstack" -y "$OUT/scene/far-world.png"
 
 # --- Logo et icônes ------------------------------------------------
-# Le lettrage du menu-titre : du pixel art, copié tel quel. C'est le
-# navigateur qui l'agrandit, en marches (voir .pixel dans la feuille de
-# style) — le retoucher ici ne ferait qu'émousser les hachures de l'ombre.
-cp "$IMG/menu/logo_title.png" "$OUT/brand/logo-wordmark.png"
+# Le lettrage haute définition du dossier profil, copié tel quel : la page
+# le réduit toujours, jamais ne l'agrandit. (La version pixel du menu-titre,
+# $IMG/menu/logo_title.png, reste disponible si on veut y revenir.)
+cp "$PROFIL/logo-hd.png" "$OUT/brand/logo-wordmark.png"
 ffmpeg -v error -i "$PROFIL/logo-carre.png" -vf "scale=64:64:flags=neighbor"   -y "$OUT/brand/favicon-64.png"
 ffmpeg -v error -i "$PROFIL/logo-carre.png" -vf "scale=180:180:flags=neighbor" -y "$OUT/brand/apple-touch-icon.png"
 

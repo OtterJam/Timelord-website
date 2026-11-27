@@ -261,14 +261,13 @@ Relit les sprites du dépôt du jeu et refabrique `assets/img/`. Demande
 de la tour monté sprite par sprite, que l'illustration a remplacé. Ces fichiers
 ne sont plus utilisés par la page.
 
-Le lettrage vient de l'écran-titre du jeu (`Game/assets/img/menu/logo_title.png`,
-632 × 156 en pixel art, onze couleurs, aucun antialiasing). Il est copié tel
-quel et agrandi **en marches** par le navigateur (`.pixel`). Le rapport n'est
-pas entier — 1,3× sur un écran classique, 2,6× sur un retina — mais chaque
-pixel de l'original est préservé et les hachures à 45° de l'ombre restent
-franches. Le sursampler à l'export pour le laisser redescendre par le
-navigateur a été essayé : c'est plus régulier sur le papier, et nettement
-plus mou à l'œil.
+Le lettrage vient du dossier profil du jeu (`devlog/divers/profil/logo-hd.png`,
+1683 × 416, haute définition, bords lissés). Il est copié tel quel et **réduit**
+par le navigateur : la case la plus large fait 820 px, soit deux fois moins que
+l'original, donc le lettrage reste net jusque sur un retina. C'est la version
+pixel art de l'écran-titre (`Game/assets/img/menu/logo_title.png`, 632 × 156,
+onze couleurs) qui était affichée avant, agrandie en marches via `.pixel` ;
+elle reste dans le dépôt du jeu si on veut y revenir.
 
 ## Mettre en ligne
 

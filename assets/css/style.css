@@ -290,11 +290,10 @@ a { text-decoration: none; }
 /* Le logo est posé dans le décor, pas par-dessus : il reste au-dessus du
    voile, qui l'éteindrait.
 
-   Il est servi à sa taille native (632 × 156, le lettrage du menu-titre du
-   jeu) et agrandi en marches par le navigateur. Le rapport n'est pas entier
-   — 1,3× sur un écran classique, 2,6× sur un retina — mais chaque pixel de
-   l'original est préservé, et les hachures à 45° de l'ombre restent franches.
-   Le sursampler avant de le redescendre les émousserait. */
+   C'est le lettrage haute définition (1683 × 416), pas la version pixel du
+   menu-titre : il est toujours réduit, jamais agrandi — deux fois plus large
+   que la case la plus large, donc net même sur un retina. Le lissage du
+   navigateur est ici celui qu'on veut, d'où l'absence de .pixel. */
 .logo {
   position: relative;
   z-index: -3;

@@ -31,9 +31,25 @@ pose par-dessus tout le décor, et c'est elle qui donne au paysage son contre-
 jour chaud et ses éclairs. Sa profondeur est courte (`9`) — c'est une brume,
 elle ne doit pas glisser comme un relief.
 
-Le décor est entier derrière le logo : la pile va, du fond vers l'avant,
-décor (`-5`), voile (`-4`), logo (`-3`), puis le reste de la page. Tous les
-plans sont donc sous le même voile, et s'éteignent ensemble.
+La pile va, du fond vers l'avant : décor (`-5`), voile (`-4`), logo (`-3`),
+puis le reste de la page. Sur téléphone, les huit plans sont donc sous le même
+voile et s'éteignent ensemble.
+
+Sur un **écran d'ordinateur**, le lettrage vient se poser en plein sur le
+héros : les trois derniers plans (héros, colline, lumière) remontent alors à
+`-2`, devant le logo. Le décor renonce à sa couche (`z-index: auto`) et chaque
+plan prend son rang parmi ceux de la page — plutôt que de couper le HTML en
+deux boîtes, ce qui marcherait ici mais ferait prendre deux fois à chacune le
+masque du bandeau portrait : le héros, à demi effacé, laisserait voir le ciel
+au travers.
+
+Comme le voile doit rester derrière le logo — sinon il l'éteint —, ces trois
+plans-là portent leur propre part d'ombre, le même dégradé découpé dans leur
+silhouette par un masque (`mask-image`, la même image que le calque, posée de
+la même façon). Étaler une ombre sur une pile ou sur chacun de ses plans
+revient au même partout où le plan est opaque ; seule la lumière, translucide,
+ressort d'un cheveu plus claire. Le cadrage (`--op`) et le dégradé (`--veil`)
+sont des variables : l'image et son ombre ne peuvent pas se désaccorder.
 
 Chaque plan porte sa profondeur dans `--d` (dans le HTML) ; `main.js` ne pose
 que la position du curseur (`--px`, `--py`) et le CSS fait le décalage. La

@@ -23,6 +23,20 @@
   --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 
   --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+
+  /* Le cadrage de l'illustration dans l'écran : « cover » déborde en
+     hauteur, et ce pourcentage dit quelle part du débord passe au-dessus.
+     Une seule valeur pour l'image et pour son ombre (voir plus bas) ;
+     l'échelle en fin de feuille la rabaisse sur les écrans allongés. */
+  --op: 37%;
+
+  /* L'ombre posée sur l'illustration. Une seule définition : le voile
+     l'étale sur les plans du fond, et les plans qui passent devant le logo
+     la portent eux-mêmes, découpée dans leur silhouette. */
+  --veil:
+    radial-gradient(44rem 22rem at 50% 62%, rgba(10, 5, 16, 0.66), rgba(10, 5, 16, 0.34) 58%, transparent 82%),
+    linear-gradient(180deg, rgba(10, 5, 16, 0.55) 0%, rgba(10, 5, 16, 0.08) 24%, rgba(10, 5, 16, 0.1) 52%, rgba(10, 5, 16, 0.8) 100%);
+
   /* L'illustration passe du presque blanc (le cadran) au vert vif (la
      colline) : il faut un halo serré sous le texte, pas seulement un flou
      lointain, pour que les petits caractères tiennent partout. */
@@ -77,8 +91,10 @@ a { text-decoration: none; }
    Le décor — l'illustration de la Faucheuse, en huit calques
    ================================================================== */
 
-/* Le décor est entier derrière le logo. D'où cette pile, du fond vers
-   l'avant : décor (-5) → voile (-4) → logo (-3) → le reste de la page. */
+/* La pile, du fond vers l'avant : décor (-5) → voile (-4) → logo (-3) →
+   le reste de la page. Sur un écran d'ordinateur, les trois derniers plans
+   remontent à -2, devant le logo : voir « Le logo dans le décor », après le
+   voile. */
 .scene {
   position: fixed;
   inset: 0;
@@ -114,7 +130,7 @@ a { text-decoration: none; }
      On descend le cadrage autant que la capuche le permet — c'est ce qui
      laisse le plus de héros et de colline dans l'écran. Voir l'échelle en bas
      de feuille pour les formats plus allongés. */
-  object-position: center 37%;
+  object-position: center var(--op);
 }
 
 /* L'orage gronde : le ciel blanchit deux fois, puis se tient tranquille une
@@ -156,9 +172,58 @@ a { text-decoration: none; }
   inset: 0;
   z-index: -4;
   pointer-events: none;
-  background:
-    radial-gradient(44rem 22rem at 50% 62%, rgba(10, 5, 16, 0.66), rgba(10, 5, 16, 0.34) 58%, transparent 82%),
-    linear-gradient(180deg, rgba(10, 5, 16, 0.55) 0%, rgba(10, 5, 16, 0.08) 24%, rgba(10, 5, 16, 0.1) 52%, rgba(10, 5, 16, 0.8) 100%);
+  background: var(--veil);
+}
+
+/* --- Le logo dans le décor, sur écran d'ordinateur -----------------
+   Le lettrage vient se poser en plein sur le héros. On fait donc passer
+   devant lui les trois derniers plans : le héros, la colline qui lui mange
+   les pieds (sans elle, il flotterait au-dessus de la crête), et la lumière
+   qui coiffe le tout.
+
+   Le décor reste un seul bloc dans le HTML ; c'est lui qui renonce à sa
+   couche (`z-index: auto`), et chaque plan prend alors son rang parmi ceux
+   de la page. Le découper en deux boîtes marcherait aussi bien ici, mais le
+   bandeau du mode portrait s'estompe avec un masque, et deux boîtes se le
+   prendraient chacune : le héros, à demi effacé, laisserait voir le ciel au
+   travers.
+
+   Le voile, lui, doit rester derrière le logo, sinon il l'éteint. Ces trois
+   plans portent donc leur propre part d'ombre, découpée dans leur silhouette
+   par un masque : la même image que le calque, posée de la même façon.
+   Étaler une ombre sur une pile ou sur chacun de ses plans revient au même
+   partout où le plan est opaque — c'est-à-dire sur le héros et sur la
+   colline. Seule la lumière, translucide, s'en tire d'un cheveu plus claire
+   (une poignée de points sur 255, au profit du halo d'horizon). */
+.l-hero { --art: url('../img/parallax_faucheuse/6_heros.webp'); }
+.l-hill { --art: url('../img/parallax_faucheuse/7_colline.webp'); }
+.l-glow { --art: url('../img/parallax_faucheuse/8_lumiere.webp'); }
+
+@media (min-width: 761px) and (min-aspect-ratio: 9 / 10) {
+  .scene { z-index: auto; }
+  .layer { z-index: -5; }
+  .l-hero, .l-hill, .l-glow { z-index: -2; }
+
+  .l-hero::after,
+  .l-hill::after,
+  .l-glow::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--veil);
+    -webkit-mask-image: var(--art);
+    mask-image: var(--art);
+    -webkit-mask-size: cover;
+    mask-size: cover;
+    -webkit-mask-position: center var(--op);
+    mask-position: center var(--op);
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+  }
+
+  /* Le héros respire ; son ombre doit respirer avec lui, sinon elle déborde
+     de sa silhouette d'un pixel et demi, et il se dessine un liseré. */
+  .l-hero::after { animation: breathe-small 5s ease-in-out infinite; }
 }
 
 /* ==================================================================
@@ -691,8 +756,8 @@ a { text-decoration: none; }
 
   /* L'ombre ne sert plus qu'en haut, sur l'illustration : en dessous, le texte
      est déjà sur le fond de page. */
-  .veil {
-    background:
+  :root {
+    --veil:
       radial-gradient(24rem 15rem at 50% 48%, rgba(10, 5, 16, 0.6), rgba(10, 5, 16, 0.26) 62%, transparent 86%),
       linear-gradient(180deg, rgba(10, 5, 16, 0.55) 0%, rgba(10, 5, 16, 0.1) 20%, rgba(10, 5, 16, 0.1) 42%, rgba(10, 5, 16, 0.26) 62%, transparent 88%);
   }
@@ -712,25 +777,25 @@ a { text-decoration: none; }
    donc le plus bas que son format autorise — autrement dit le maximum de
    héros et de colline qu'on puisse garder. --- */
 @media (min-aspect-ratio: 9 / 5) {
-  .layer img { object-position: center 28%; }
+  :root { --op: 28%; }
 }
 
 @media (min-aspect-ratio: 2 / 1) {
-  .layer img { object-position: center 23%; }
+  :root { --op: 23%; }
 }
 
 @media (min-aspect-ratio: 9 / 4) {
-  .layer img { object-position: center 19%; }
+  :root { --op: 19%; }
 }
 
 @media (min-aspect-ratio: 13 / 5) {
-  .layer img { object-position: center 15%; }
+  :root { --op: 15%; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   /* Les `!important` passent aussi devant les variantes `.is-cast`, qui
      rejouent ces mêmes animations. */
-  .l-sky img, .l-glow img, .l-reaper img, .l-hero img,
+  .l-sky img, .l-glow img, .l-reaper img, .l-hero img, .l-hero::after,
   .signup-box.is-done .signup-done,
   .signup-box.is-done .signup-done__badge,
   .signup-box.is-done .signup-done__badge svg,

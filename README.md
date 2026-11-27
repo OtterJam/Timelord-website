@@ -97,7 +97,10 @@ qu'il faut pour la capuche, le cadran, le héros et le haut de la colline.
 Le bas du bandeau est fondu au `mask-image`, et le fond de page prend le
 relais : en portrait, il s'éteint dans le vert sombre de la colline
 (`#182512`) plutôt que dans le violet du ciel, pour que la coupure ne se voie
-pas. Le voile, lui, ne sert plus que sur l'illustration : en dessous, le texte
+pas. Le fondu **ne part que du pied du héros** (78 %) : l'illustration tient
+en entier dans la hauteur du bandeau — c'est la largeur qui est rognée —, donc
+le héros y occupe toujours la même tranche, 48 % à 76 %. Partir de 58 % le
+prenait à mi-corps : 65 % d'opacité aux pieds, l'épée mangée par le décor. Le voile, lui, ne sert plus que sur l'illustration : en dessous, le texte
 est déjà sur le fond de page.
 
 Sur un téléphone **court** (≤ 720 px de haut), le bloc central mange l'écran

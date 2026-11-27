@@ -115,8 +115,8 @@ restent dans le dépôt comme sources.
 
 Tout se règle dans [`assets/js/config.js`](assets/js/config.js) :
 
-- `links.tiktok` et `links.instagram` — dès qu'une des deux est remplie, la
-  rangée « Suivre le développement » apparaît en bas de l'écran ;
+- `links.tiktok`, `links.instagram` et `links.patreon` — dès qu'une seule est
+  remplie, la rangée « Suivre le développement » apparaît en bas de l'écran ;
 - `links.steam` — vide, le bouton reste en « Page à venir » ; rempli, il
   devient un vrai lien ;
 - `firebase.projectId` et `firebase.apiKey` — voir ci-dessous.

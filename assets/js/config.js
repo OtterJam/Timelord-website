@@ -6,10 +6,11 @@
 
 window.TL_CONFIG = {
   links: {
-    // Dès qu'une de ces deux lignes est remplie, la rangée
+    // Dès qu'une de ces trois lignes est remplie, la rangée
     // « Suivre le développement » apparaît en bas de l'écran.
     tiktok: 'https://www.tiktok.com/@timelord_dev',
     instagram: 'https://www.instagram.com/timelord_dev/',
+    patreon: 'https://www.patreon.com/cw/PlayTImeLord',
 
     // Les autres, si un jour tu les ouvres.
     youtube: '',

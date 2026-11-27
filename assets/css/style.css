@@ -583,6 +583,7 @@ a { text-decoration: none; }
   color: #fff;
 }
 
+.socials a[data-net='patreon'] { background: #ff424d; border-color: rgba(255, 255, 255, 0.28); color: #fff; }
 .socials a[data-net='youtube'] { background: #ff0033; border-color: rgba(255, 255, 255, 0.28); color: #fff; }
 .socials a[data-net='x'] { background: #000; border-color: rgba(255, 255, 255, 0.22); color: #fff; }
 .socials a[data-net='bluesky'] { background: #0a7aff; border-color: rgba(255, 255, 255, 0.28); color: #fff; }
